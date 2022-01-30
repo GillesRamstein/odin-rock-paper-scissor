@@ -8,23 +8,33 @@ Evaluate winner:
 */
 
 const CHOICES = ["Rock", "Paper", "Scissor"]
+let scores = [0, 0]
 
-function getComputerChoice () {
+function getComputerChoice() {
     return CHOICES[Math.floor(Math.random() * 3)];
 }
 
-function getPlayerChoice () {
+function getPlayerChoice() {
     console.log(
         "What do you choose for the next round?\n" +
         " 1 -> Rock\n 2 -> Paper\n 3 -> Scissor"
     );
     let playerPrompt = prompt("Enter 1, 2 or 3:");
-    if (["1", "2", "3"].indexOf(playerPrompt) == -1) {
-        console.log("Only valid choices are 1, 2 or 3!");
+    const VALID_INPUTS = ["1", "2", "3", "rock", "paper", "scissor"]
+    if (VALID_INPUTS.indexOf(playerPrompt.toLowerCase()) == -1) {
         getPlayerChoice();
     } else {
-        return CHOICES[parseInt(playerPrompt) - 1];
+        if (playerPrompt.length == 1) {
+            return CHOICES[parseInt(playerPrompt) - 1];
+        } else {
+            return titleCaseString(playerPrompt);
+        }
+
     }
+}
+
+function titleCaseString(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
 
 function playerWins(playerChoice, computerChoice) {
@@ -39,23 +49,24 @@ function playerWins(playerChoice, computerChoice) {
 }
 
 function playRound(playerChoice, computerChoice) {
-    console.log(`Player choice: ${playerChoice}`);
-    console.log(`Computer choice: ${computerChoice}`);
     if (playerChoice === computerChoice) {
-        console.log("No winner, no loser. This round is a draw!");
+        console.log(`${playerChoice} and ${computerChoice} are equal: This round is a draw!`);
     } else if (playerWins(playerChoice, computerChoice)) {
-        console.log("You won this round!");
+        console.log(`${playerChoice} beats ${computerChoice}: You won this round!`);
+        scores[0]++;
     } else {
-        console.log("You lost this round!");
+        console.log(`${computerChoice} beats ${playerChoice}: You lost this round!`);
+        scores[1]++;
     }
+    console.log(`The current standings are:\n Player: ${scores[0]}\n Computer ${scores[1]}`);
 }
 
-function playGame () {
+function playGame() {
     console.log("Welcome to 'Rock Paper Scissor'");
     let playGame = true;
     while (playGame) {
-        playerChoice =  getPlayerChoice()
-        computerChoice = getComputerChoice()
+        playerChoice = getPlayerChoice();
+        computerChoice = getComputerChoice();
         playRound(playerChoice, computerChoice);
         playGame = confirm("Do you wanna play another round?");
     }
