@@ -13,11 +13,21 @@
 <body>
 
     <div id="container">
-        <h1>Play Rock Paper Scissor</h1>
+        <div id="title">
+            <h1>Rock Paper Scissor</h1>
+            <span>It is you against your browser</span>
+            <span> First to 5 wins!</span>
+        </div>       
         <div class="buttons">
-            <div class="button" id="rock">Rock</div>
-            <div class="button" id="paper">Paper</div>
-            <div class="button" id="scissor">Scissor</div>
+            <div class="button" id="rock">
+                <img src="images/stone.png" alt="stone icon">
+            </div>
+            <div class="button" id="paper">
+                <img src="images/toilet-paper.png" alt="paper icon">
+            </div>
+            <div class="button" id="scissor">
+                <img src="images/scissors.png" alt="scissor icon">
+            </div>
         </div>
         <div id="scoreboard">
             <h2 id="round">Scores - Round: 0</h2>
@@ -25,8 +35,13 @@
                 <div id="score-player">You: 0</div>
                 <div id="score-computer">AI: 0</div>
             </div>
+            <span id="result-message">You Win!</span>
+            <span id="play-again">Click to play again</span>
         </div>
     </div>
+    <a id="footer" href="https://www.flaticon.com/free-icons/stone-age" title="stone age icons">
+        The icons used on this page are created by Freepik - Flaticon
+    </a>
 
 </body>
 

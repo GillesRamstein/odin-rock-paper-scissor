@@ -73,14 +73,13 @@ Evaluate winner:
 
 // playGame()
 
-
 /********************************/
 /*      Revision to add UI      */
 /****************************** */
 
+console.log("Welcome to 'Rock Paper Scissor'")
 
-console.log("Welcome to 'Rock Paper Scissor'");
-
+const MIN_ROUNDS_TO_WIN = 5
 let playerScore = 0
 let computerScore = 0
 let round = 0
@@ -93,50 +92,141 @@ rock.addEventListener("click", playGame)
 paper.addEventListener("click", playGame)
 scissor.addEventListener("click", playGame)
 
+function winConditionIsMet() {
+    return (
+        (playerScore >= MIN_ROUNDS_TO_WIN || computerScore >= MIN_ROUNDS_TO_WIN) &&
+        playerScore != computerScore
+    )
+}
+
 function playGame(e) {
-    console.log("mouseEvent", e)
-    console.log("this.id", this.id)
-    const playerChoice = titleCaseString(this.id)
-    determineWinner(playerChoice)
-    if ((playerScore >= 5 || computerScore >= 5) && playerScore != computerScore) {
-        playerScore = 0
-        computerScore = 0
-        round = 0
+    if (!winConditionIsMet()) {
+        console.log("game running")
+        const playerChoice = titleCaseString(this.id)
+        const winner = determineWinner(playerChoice)
+        console.log("ANIMATE BOARD")
+        animateScoreboard(winner)
+        ++round
+        updateScoreboard()
     }
-    updateScoreboard()
-    round++
+    if (winConditionIsMet()) {
+        console.log("game finished")
+        endGame()
+        restartGame()
+    }
 }
 
 function titleCaseString(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()
 }
 
 function determineWinner(playerChoice) {
     const computerChoice = getComputerChoice()
     if (playerChoice === computerChoice) {
-        console.log(`${playerChoice} and ${computerChoice} are equal: This round is a draw!`);
+        // console.log(
+        //     `${playerChoice} and ${computerChoice} are equal: This round is a draw!`
+        // )
+        ++playerScore
+        ++computerScore
+        return "round-tie"
     } else if (playerWins(playerChoice, computerChoice)) {
-        console.log(`${playerChoice} beats ${computerChoice}: You won this round!`);
-        playerScore++;
+        // console.log(`${playerChoice} beats ${computerChoice}: You won this round!`)
+        ++playerScore
+        return "round-won"
     } else {
-        console.log(`${computerChoice} beats ${playerChoice}: You lost this round!`);
-        computerScore++;
+        // console.log(`${computerChoice} beats ${playerChoice}: You lost this round!`)
+        ++computerScore
+        return "round-lost"
     }
-    console.log(`The current standings are:\n Player: ${playerScore}\n Computer ${computerScore}`);
+}
+
+function animateScoreboard(result) {
+    if (!["round-tie", "round-won", "round-lost"].includes(result)) {
+        return
+    }
+    let color
+    if (result == "round-tie") {
+        color = "orange"
+    }
+    if (result == "round-won") {
+        color = "green"
+    }
+    if (result == "round-lost") {
+        color = "red"
+    }
+    let scoreboard = document.getElementById("scoreboard")
+    scoreboard.style.cssText = `
+        background-color: ${color};
+        transform: scale(1.05);
+    `
+    scoreboard.addEventListener("transitionend", handleTransitionend)
+}
+
+function handleTransitionend() {
+    console.log("TRANSITION END")
+    scoreboard.style.cssText = `
+        background-color: rgb(187, 184, 184);
+        transform: none;
+    `
+}
+
+function endGame() {
+    console.log("end game")
+    if (playerScore > computerScore) {
+        msg = "You win!"
+        color = "green"
+    } else {
+        msg = "You lose!"
+        color = "red"
+    }
+
+    const scoreboard = document.getElementById("scoreboard")
+    scoreboard.removeEventListener("transitionend", handleTransitionend)
+    scoreboard.style.cssText = `
+        width: 30rem;
+        padding: 2rem 0 1rem 0;
+        margin-top: 1rem;
+        background-color: ${color};
+    `
+    const message = document.getElementById("result-message")
+    message.textContent = msg
+    message.style.display = "inline"
+
+    const playAgain = document.getElementById("play-again")
+    playAgain.style.display = "inline"
+}
+
+function restartGame() {
+    console.log("restart game")
+    scoreboard = document.getElementById("scoreboard")
+    scoreboard.addEventListener("click", () => {
+        playerScore = computerScore = round = 0
+        scoreboard.style.cssText = `
+            width: 20rem;
+            padding: 1rem 0;
+            margin-top: 2rem;
+            background-color: rgb(187, 184, 184);
+        `
+        const message = document.getElementById("result-message")
+        message.style.display = "none"
+        const playAgain = document.getElementById("play-again")
+        playAgain.style.display = "none"
+        updateScoreboard()
+    })
 }
 
 function getComputerChoice() {
-    return ["Rock", "Paper", "Scissor"][Math.floor(Math.random() * 3)];
+    return ["Rock", "Paper", "Scissor"][Math.floor(Math.random() * 3)]
 }
 
 function playerWins(playerChoice, computerChoice) {
     switch (true) {
-        case (playerChoice === "Rock" && computerChoice === "Scissor"):
-            return true;
-        case (playerChoice === "Scissor" && computerChoice === "Paper"):
-            return true;
-        case (playerChoice === "Paper" && computerChoice === "Rock"):
-            return true;
+        case playerChoice === "Rock" && computerChoice === "Scissor":
+            return true
+        case playerChoice === "Scissor" && computerChoice === "Paper":
+            return true
+        case playerChoice === "Paper" && computerChoice === "Rock":
+            return true
     }
 }
 
